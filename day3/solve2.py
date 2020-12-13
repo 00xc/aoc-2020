@@ -1,13 +1,13 @@
 from multiprocessing import Pool
 
-def worker(args):
-	n, line, (right, down) = args
+def worker(line_num, line, slope):
+	right, down = slope
 
 	# We don't land on this line
-	if n % down != 0:
+	if line_num % down != 0:
 		return 0
 
-	if line[ ((right*n) // down) % len(line) ] == "#":
+	if line[ ((right*line_num) // down) % len(line) ] == "#":
 		return 1
 	return 0
 
@@ -21,7 +21,7 @@ if __name__ == '__main__':
 	with Pool(4) as pool:
 		for slope in slopes:
 			with open("input.txt", "r") as f:
-				res = pool.map(worker,
+				res = pool.starmap(worker,
 					[ (i, line.rstrip(), slope) for (i, line) in enumerate(f.readlines())])
 
 			results.append(sum(res))
